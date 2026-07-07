@@ -27,9 +27,11 @@ static/
 
 ## Web dashboard
 
-- Endpoint: `/` (HTML), `/chart.js`, `/api/summary?month=YYYY-MM`
-- Auth opsional: kalau `DASHBOARD_TOKEN` di-set, wajib match `?token=...`. Kalau kosong, tanpa auth.
-- Bind address: `BIND_ADDR` env (default `0.0.0.0:3000`)
+- Endpoint: `/` (HTML), `/login` GET+POST, `/logout`, `/chart.js`, `/api/summary?month=YYYY-MM`
+- Auth: password + cookie sesi. Kalau `DASHBOARD_PASSWORD` di-set, akses `/` dan `/api/summary` diarahkan ke `/login`. Kalau kosong, dashboard terbuka tanpa auth (dev only).
+- Cookie sesi: `dashboard_session`, isinya `HMAC-SHA256(SESSION_SECRET, "dashboard-authorized-v1")` base64url. HttpOnly, SameSite=Lax, Max-Age 30 hari.
+- `SESSION_SECRET` harus stabil (jangan diganti antar deploy — semua sesi login lama bakal invalid).
+- Bind address: `BIND_ADDR` env (default `0.0.0.0:8765`)
 - **Read-only**: cuma SELECT, nol operasi tulis — biar aman dijadiin snapshot bulanan tanpa risiko korupsi data
 
 ## Flow utama
@@ -49,7 +51,7 @@ static/
 
 ## Env vars
 
-Lihat `.env.example`. Wajib: `TELOXIDE_TOKEN`, `OWNER_ID`, `DATABASE_URL`. Opsional dashboard: `DASHBOARD_TOKEN`, `BIND_ADDR`.
+Lihat `.env.example`. Wajib: `TELOXIDE_TOKEN`, `OWNER_ID`, `DATABASE_URL`. Opsional dashboard: `DASHBOARD_PASSWORD`, `SESSION_SECRET`, `BIND_ADDR`.
 
 ## Development
 
