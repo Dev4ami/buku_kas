@@ -1,5 +1,5 @@
 # Multi-stage build — hasil akhir image kecil (~20MB)
-FROM rust:1.83-slim AS builder
+FROM rust:1.85-slim AS builder
 
 WORKDIR /app
 
