@@ -1,0 +1,20 @@
+{
+  "name": "Buku Kas",
+  "short_name": "Buku Kas",
+  "description": "Catatan keuangan harian pribadi",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F1F4F1",
+  "theme_color": "#167C80",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -23,6 +23,8 @@ type HmacSha256 = Hmac<Sha256>;
 
 const INDEX_HTML: &str = include_str!("../static/index.html");
 const CHART_JS: &str = include_str!("../static/chart.umd.js");
+const ICON_PNG: &[u8] = include_bytes!("../static/icon.png");
+const MANIFEST: &str = include_str!("../static/manifest.webmanifest");
 
 const SESSION_COOKIE: &str = "dashboard_session";
 const SESSION_MAX_AGE_SECS: i64 = 60 * 60 * 24 * 30; // 30 hari
@@ -144,6 +146,8 @@ pub async fn serve(pool: PgPool) {
         .route("/login", get(login_page).post(login_submit))
         .route("/logout", get(logout))
         .route("/chart.js", get(chart_js))
+        .route("/icon.png", get(icon_png))
+        .route("/manifest.webmanifest", get(manifest))
         .route("/api/summary", get(summary))
         .with_state(state);
 
@@ -174,6 +178,26 @@ async fn chart_js() -> ([(&'static str, &'static str); 2], &'static str) {
             ("cache-control", "public, max-age=86400"),
         ],
         CHART_JS,
+    )
+}
+
+async fn icon_png() -> ([(&'static str, &'static str); 2], &'static [u8]) {
+    (
+        [
+            ("content-type", "image/png"),
+            ("cache-control", "public, max-age=604800"),
+        ],
+        ICON_PNG,
+    )
+}
+
+async fn manifest() -> ([(&'static str, &'static str); 2], &'static str) {
+    (
+        [
+            ("content-type", "application/manifest+json"),
+            ("cache-control", "public, max-age=86400"),
+        ],
+        MANIFEST,
     )
 }
 
@@ -336,12 +360,19 @@ async fn summary(
     }))
 }
 
-const LOGIN_HTML: &str = r#"<!DOCTYPE html>
+const LOGIN_HTML: &str = r##"<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login — Buku Kas</title>
+<link rel="icon" type="image/png" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#167C80">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Buku Kas">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -433,4 +464,4 @@ const LOGIN_HTML: &str = r#"<!DOCTYPE html>
     {ERROR}
   </form>
 </body>
-</html>"#;
+</html>"##;
