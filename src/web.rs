@@ -65,7 +65,7 @@ struct Tx {
 /// Jalankan web server. Dipanggil via tokio::spawn dari main.
 pub async fn serve(pool: PgPool) {
     let token = std::env::var("DASHBOARD_TOKEN").ok().filter(|t| !t.is_empty());
-    let bind = std::env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:3000".into());
+    let bind = std::env::var("BIND_ADDR").unwrap_or_else(|_| "0.0.0.0:8765".into());
 
     let state = WebState { pool, token };
     let app = Router::new()
