@@ -6,6 +6,7 @@ Bot Telegram pribadi untuk mencatat keuangan harian. Milik satu user (owner-only
 
 - **Rust + teloxide 0.13** — bot framework, long polling (bukan webhook, biar gak perlu expose port)
 - **sqlx 0.8 + Postgres** — storage. Migrations otomatis jalan saat startup (`sqlx::migrate!`)
+- **Axum 0.8** — web dashboard read-only, jalan sebagai tokio task berdampingan bot
 - **Timezone**: semua laporan dihitung dalam WIB (Asia/Jakarta), disimpan sebagai TIMESTAMPTZ (UTC)
 
 ## Struktur
@@ -15,10 +16,21 @@ src/
 ├── main.rs      # entry, dispatcher, handlers (command, text, callback)
 ├── parser.rs    # parse input santai: "15k soto", "1.5jt kos", "+5jt gaji"
 ├── db.rs        # semua query sqlx
-└── report.rs    # laporan /hariini & /bulanini
+├── report.rs    # laporan /hariini & /bulanini
+└── web.rs       # dashboard read-only (Axum), spawn dari main
 migrations/
 └── 0001_init.sql
+static/
+├── index.html    # UI dashboard, di-embed via include_str!
+└── chart.umd.js  # Chart.js bundled, di-embed via include_str!
 ```
+
+## Web dashboard
+
+- Endpoint: `/` (HTML), `/chart.js`, `/api/summary?month=YYYY-MM`
+- Auth opsional: kalau `DASHBOARD_TOKEN` di-set, wajib match `?token=...`. Kalau kosong, tanpa auth.
+- Bind address: `BIND_ADDR` env (default `0.0.0.0:3000`)
+- **Read-only**: cuma SELECT, nol operasi tulis — biar aman dijadiin snapshot bulanan tanpa risiko korupsi data
 
 ## Flow utama
 
@@ -37,7 +49,7 @@ migrations/
 
 ## Env vars
 
-Lihat `.env.example`. Wajib: `TELOXIDE_TOKEN`, `OWNER_ID`, `DATABASE_URL`.
+Lihat `.env.example`. Wajib: `TELOXIDE_TOKEN`, `OWNER_ID`, `DATABASE_URL`. Opsional dashboard: `DASHBOARD_TOKEN`, `BIND_ADDR`.
 
 ## Development
 
@@ -61,4 +73,3 @@ Catatan: `sqlx::migrate!` butuh folder `migrations/` ada saat compile. Query pak
 - [ ] Auto-guess kategori dari keyword note ("soto" → makan)
 - [ ] `/hapus <id>` untuk hapus transaksi lama
 - [ ] Tabel `budgets` + alert kalau mendekati limit
-- [ ] Web dashboard read-only (fase 2)
