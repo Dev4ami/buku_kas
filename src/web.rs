@@ -124,17 +124,18 @@ pub async fn serve(pool: PgPool) {
     let session_token = match (&password, &secret) {
         (Some(_), Some(sec)) => Some(compute_session_token(sec)),
         (Some(_), None) => {
+            // Fail-closed: password di-set tapi secret hilang = misconfig.
+            // Jangan buka dashboard tanpa auth — lebih baik gak jalan sama sekali.
             tracing::error!(
-                "DASHBOARD_PASSWORD di-set tapi SESSION_SECRET kosong — auth dimatikan"
+                "DASHBOARD_PASSWORD di-set tapi SESSION_SECRET kosong — dashboard TIDAK dijalankan (fail-closed). Set SESSION_SECRET atau kosongkan DASHBOARD_PASSWORD."
             );
+            return;
+        }
+        (None, _) => {
+            tracing::warn!("Dashboard jalan TANPA auth (DASHBOARD_PASSWORD kosong)");
             None
         }
-        _ => None,
     };
-
-    if session_token.is_none() && password.is_none() {
-        tracing::warn!("Dashboard jalan TANPA auth (DASHBOARD_PASSWORD kosong)");
-    }
 
     let state = WebState {
         pool,

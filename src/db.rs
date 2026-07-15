@@ -24,7 +24,6 @@ pub struct TxRow {
     pub amount: i64,
     pub note: Option<String>,
     pub category: Option<String>,
-    pub created_at: DateTime<Utc>,
 }
 
 pub async fn connect(database_url: &str) -> Result<PgPool> {
@@ -129,7 +128,7 @@ pub async fn totals(
 pub async fn recent_txs(pool: &PgPool, limit: i64) -> Result<Vec<TxRow>> {
     let rows = sqlx::query_as::<_, TxRow>(
         r#"
-        SELECT t.id, t.amount, t.note, c.name AS category, t.created_at
+        SELECT t.id, t.amount, t.note, c.name AS category
         FROM transactions t
         LEFT JOIN categories c ON c.id = t.category_id
         ORDER BY t.created_at DESC

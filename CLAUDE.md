@@ -47,7 +47,7 @@ static/
 - **`amount` selalu BIGINT Rupiah utuh. JANGAN PERNAH float.**
 - **Owner-only**: semua handler cek `OWNER_ID`. Pesan dari orang lain di-ignore diam-diam (jangan balas apapun)
 - Income ditandai prefix `+` di input, `tx_type = 'income'`, tanpa kategori
-- Kategori sengaja cuma 7 — jangan tambah tanpa diminta
+- Kategori sengaja sedikit (8) — jangan tambah tanpa diminta
 
 ## Env vars
 
