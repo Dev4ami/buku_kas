@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# Batasi paralelisme compile → peak RAM lebih rendah, hindari OOM di server kecil
+ENV CARGO_BUILD_JOBS=1
+
 # Cache dependencies dulu biar rebuild cepat
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src static && echo "fn main() {}" > src/main.rs && touch static/index.html \

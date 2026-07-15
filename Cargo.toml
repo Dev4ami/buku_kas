@@ -23,5 +23,7 @@ sha2 = "0.10"
 base64 = "0.22"
 
 [profile.release]
-lto = true
+# thin LTO: peak RAM saat linking jauh lebih kecil dari fat LTO (`true`),
+# hasil optimize hampir sama. Penting biar build gak OOM di server RAM kecil.
+lto = "thin"
 strip = true
